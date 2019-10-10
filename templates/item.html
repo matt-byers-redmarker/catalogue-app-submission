@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>View {{item.name}}</title>
+		{% include "head.html" %}
+	</head>
+	<body>
+		{% include "header.html" %}
+		<section class="section">
+			<div class="container">
+				<div class="columns">
+					<div class="column is-one-third">
+						<h1 class="title">
+							{{item.name}}
+						</h1>
+						<p> 
+							{{item.description}}
+						</p>
+						<a href="{{ url_for('editItem', item_id=item.id)}}">Edit item</a>
+						<br>
+						<a href="{{ url_for('deleteItem', item_id=item.id)}}">Delete item</a>
+					</div>
+				</div>
+			</section>
+		</body>
+	</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Catalogue App</title>
+		{% include "head.html" %}
+	</head>
+	<body>
+		{% include "header.html" %}
+		<section class="section">
+			<div class="container">
+				<div class="columns">
+					<div class="column is-one-third">
+						<h1 class="title">
+						Categories
+						</h1>
+						<p class="subtitle">
+							A list of all the categories
+						</p>
+						<ul>
+							{% for c in categories %}
+								<li><a href="{{ url_for('category', category_id=c.id )}}">{{c.name}}</a></li>
+							{% endfor %}
+						</ul>
+					</div>
+					<div class="column">
+						<h1 class="title">
+						Category Items
+						</h1>
+						<p class="subtitle">
+							A list of all the items
+						</p>
+						<ul>
+							{% for i in items %}
+								<li><a href="{{ url_for('item', item_id=i.id)}}">{{i.name}}</a></li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+	</body>
+</html>

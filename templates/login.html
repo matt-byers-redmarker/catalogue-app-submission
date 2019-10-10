@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        {% include "head.html" %}
+        <meta name="google-signin-scope" content="profile email openid">
+        <meta name="google-signin-client_id" content="531238088619-l8qdbu2tms74f1kkaoam691u7te4dcdh.apps.googleusercontent.com">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="https://apis.google.com/js/platform.js"></script>
+        <script src="../static/js/oauthScripts.js"></script>
+    </head>
+    <body>
+        <section class="section is-fullheight">
+            <div class="container">
+                <div class="level">
+                    <div class="level-item">
+                        <div class="column is-one-third">
+                            <div class="box">
+                                <h1 class="title has-text-centered">
+                                Login
+                                </h1>
+                                <div class="level">
+                                    <div class="g-signin2 level-item" data-onsuccess="onSignIn" data-theme="light"></div>
+                                    <a class="button is-white is-hidden" id="logout-button" onclick="signOut()">Logout</a>
+                                    <!-- <div id="result"> -->
+                                        <!-- <h1 class="title">Profile Details</h1>
+                                        <img id="pic">
+                                        <p>Email Address</p>
+                                        <p id="email"></p> -->
+                                    <!-- </div> -->
+                                    <script>
+                                        function onSignIn(googleUser) {
+                                            // Useful data for your client-side scripts:
+                                            var profile = googleUser.getBasicProfile();
+                                            $('.g-signin2').addClass('is-hidden')
+                                            $('#logout-button').removeClass('is-hidden')
+                                            console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+                                            console.log('Full Name: ' + profile.getName());
+                                            console.log('Given Name: ' + profile.getGivenName());
+                                            console.log('Family Name: ' + profile.getFamilyName());
+                                            console.log("Image URL: " + profile.getImageUrl());
+                                            $("#pic").attr("src",profile.getImageUrl());
+                                            console.log("Email: " + profile.getEmail());
+                                            $("#email").text(profile.getEmail());
+
+                                            // The ID token you need to pass to your backend:
+                                            var id_token = googleUser.getAuthResponse().id_token;
+                                            console.log("ID Token: " + id_token);
+                                            $('#result').html('ID Token:</br>'+ id_token + '')
+                                        }
+
+                                        function signOut() {
+                                            $('.g-signin2').removeClass('is-hidden')
+                                            $('#logout-button').addClass('is-hidden')
+                                            var auth2 = gapi.auth2.getAuthInstance();
+                                            auth2.signOut().then(function() {
+                                                console.log('User signed out.');
+                                            });
+                                        }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>
+
+
+
+<!-- 
+
+
+<div class="modal">
+  <div class="modal-background" id="close-login-1"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Login</p>
+      <button class="delete" id="close-login" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+    GOOGLE SIGN IN
+        <div class="level">
+            <div class="g-signin2 level-item" data-onsuccess="onSignIn" data-theme="light"></div>
+        </div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success">Save changes</button>
+      <button class="button">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+<script type = "text/javascript">
+    document.querySelector('#login-button').addEventListener('click', function(event) {
+        event.preventDefault();
+        var modal = document.querySelector('.modal'); // assuming you have only 1
+        var html = document.querySelector('html');
+        var exit = document.querySelectorAll('#close-login, #close-login-1');
+        modal.classList.add('is-active');
+        html.classList.add('is-clipped');
+
+        exit.forEach(function(elem) {
+            elem.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.classList.remove('is-active');
+                html.classList.remove('is-clipped');
+            });
+        });
+    });
+
+    function onSignIn(googleUser) {
+        // Hide login button / show logout button
+        document.querySelector('#login-button').classList.add('is-hidden')
+        document.querySelector('#logout-button').classList.remove('is-hidden')
+
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log('Full Name: ' + profile.getName());
+        console.log('Given Name: ' + profile.getGivenName());
+        console.log('Family Name: ' + profile.getFamilyName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
+
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+    }
+
+    gapi.load('auth2', function() {
+        auth2 = gapi.auth2.init({
+            client_id: '152193415882-arhi2d8h5cle2it1nm5gfbh3s1vcoek5.apps.googleusercontent.com',
+            // Scopes to request in addition to 'profile' and 'email'
+            //scope: 'additional_scope'
+        });
+    });
+
+    function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+    }
+</script>
+ -->

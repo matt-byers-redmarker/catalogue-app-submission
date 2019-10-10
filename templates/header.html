@@ -1,0 +1,43 @@
+<nav class="navbar is-light" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/catalogue">
+            <h1 class="is-size-4">Catalogue App</h1>
+        </a>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                    More
+                </a>
+                <div class="navbar-dropdown">
+                    <a class="navbar-item" href="/category">
+                        Category
+                    </a>
+                    <a class="navbar-item" href="/deleteItem">
+                        Delete Item
+                    </a>
+                    <a class="navbar-item" href="/editItem">
+                        Edit Item
+                    </a>
+                    <a class="navbar-item" href="/item">
+                        Item
+                    </a>
+                    <hr class="navbar-divider">
+                    <a class="navbar-item">
+                        Report an issue
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary"><strong>Sign up</strong></a>
+                    <a class="button is-white" id="login-button" href="{{ url_for('login')}}">Log in</a>
+                    <a class="button is-white is-hidden" id="logout-button" onclick="signOut()">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

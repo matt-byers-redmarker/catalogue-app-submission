@@ -1,0 +1,66 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 # -*- mode: ruby -*-\
+# vi: set ft=ruby :\
+\
+Vagrant.configure("2") do |config|\
+  config.vm.box = "bento/ubuntu-16.04"\
+  config.vm.box_version = "= 2.3.5"\
+  config.vm.synced_folder ".", "/vagrant"\
+  config.vm.network "forwarded_port", guest: 8000, host: 8000, auto_correct: true, host_ip: "127.0.0.1"\
+  config.vm.network "forwarded_port", guest: 8001, host: 8001, auto_correct: true, host_ip: "127.0.0.1"\
+  config.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true, host_ip: "127.0.0.1"\
+  config.vm.network "forwarded_port", guest: 5000, host: 5000, auto_correct: true, host_ip: "127.0.0.1"\
+  config.vm.network "forwarded_port", guest: 5001, host: 5001, auto_correct: true, host_ip: "127.0.0.1"\
+  config.vm.network "forwarded_port", guest: 5002, host: 5002, auto_correct: true, host_ip: "127.0.0.1"\
+  config.vm.network "forwarded_port", guest: 5003, host: 5003, auto_correct: true, host_ip: "127.0.0.1"\
+  config.vm.network "forwarded_port", guest: 5004, host: 5004, auto_correct: true, host_ip: "127.0.0.1"\
+\
+  # Work around disconnected virtual network cable.\
+  config.vm.provider "virtualbox" do |vb|\
+    vb.customize ["modifyvm", :id, "--cableconnected1", "on"]\
+  end\
+\
+  config.vm.provision "shell", inline: <<-SHELL\
+    apt-get -qqy update\
+\
+    # Work around https://github.com/chef/bento/issues/661\
+    # apt-get -qqy upgrade\
+    DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade\
+\
+    apt-get -qqy install make zip unzip postgresql\
+\
+    apt-get -qqy install python3 python3-pip\
+    pip3 install --upgrade pip\
+    pip3 install flask packaging oauth2client redis passlib flask-httpauth\
+    pip3 install sqlalchemy flask-sqlalchemy psycopg2-binary bleach requests\
+\
+    apt-get -qqy install python python-pip\
+    pip2 install --upgrade pip\
+    pip2 install flask packaging oauth2client redis passlib flask-httpauth\
+    pip2 install sqlalchemy flask-sqlalchemy psycopg2-binary bleach requests\
+\
+    su postgres -c 'createuser -dRS vagrant'\
+    su vagrant -c 'createdb'\
+    su vagrant -c 'createdb news'\
+    su vagrant -c 'createdb forum'\
+    su vagrant -c 'psql forum -f /vagrant/forum/forum.sql'\
+\
+    vagrantTip="[35m[1mThe shared directory is located at /vagrant\\\\nTo access your shared files: cd /vagrant[m"\
+    echo -e $vagrantTip > /etc/motd\
+\
+    wget http://download.redis.io/redis-stable.tar.gz\
+    tar xvzf redis-stable.tar.gz\
+    cd redis-stable\
+    make\
+    make install\
+\
+    echo "Done installing your virtual machine!"\
+  SHELL\
+end\
+}

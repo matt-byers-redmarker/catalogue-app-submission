@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>New Item</title>
+		{% include "head.html" %}
+	</head>
+	<body>
+		{% include "header.html" %}
+		<section class="section">
+			<div class="container">
+				<div class="columns">
+					<div class="column is-one-third">
+						<h1 class="title">Create new item</h1>
+						<form action="{{ url_for('newItem', category_id=category_id)}}" method = 'post'>
+							<div class="field">
+								<label class="label">Name</label>
+								<div class="control">
+									<input class="input" type="text" name="name" placeholder = "Enter the name here">
+								</div>
+							</div>
+							<div class="field">
+								<label class="label">Description</label>
+								<div class="control">
+									<input class="input" type="text" name="description" placeholder="Enter the description">
+								</div>
+							</div>
+							<input class="button is-primary" type="submit" value="Create Item">
+							<a class="button" href = "{{url_for('category', category_id = category_id)}}"> Cancel </a>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
+	</body>
+</html>

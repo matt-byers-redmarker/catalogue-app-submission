@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Delete {{item.name}}</title>
+		{% include "head.html" %}
+	</head>
+	<body>
+		{% include "header.html" %}
+		<section class="section">
+			<div class="container">
+				<div class="columns">
+					<div class="column is-one-third">
+						<h1 class="title">Delete {{item.name}}?</h1>
+						<form action="#" method = 'post'>
+							<input class="button is-danger" type='submit', value = 'Delete'>
+							<a class="button" href = "{{url_for('category', category_id = item.category_id)}}"> Cancel </a>
+						</form>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>
