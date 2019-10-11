@@ -14,7 +14,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 
 import httplib2
-import requests
+# import requests
 import string
 import random
 import json
@@ -44,12 +44,13 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/oauth/<provider>', methods = ['POST'])
-def login2(provider):
+@app.route('/oauth/google/', methods = ['POST'])
+def login2():
     #STEP 1 - Parse the auth code
-    auth_code = request.json.get('auth_code')
-    print("Step 1 - Complete, received auth code %s" % auth_code)
-    if provider == 'google':
+    # auth_code = request.json.get('auth_code')
+    # token = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImVlNGRiZDA2YzA2NjgzY2I0OGRkZGNhNmI4OGMzZTQ3M2I2OTE1YjkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNTMxMjM4MDg4NjE5LWw4cWRidTJ0bXM3NGYxa2thb2FtNjkxdTd0ZTRkY2RoLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNTMxMjM4MDg4NjE5LWw4cWRidTJ0bXM3NGYxa2thb2FtNjkxdTd0ZTRkY2RoLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA4MTgxMTA2MDQ3MjQ5NTk0MzA0IiwiZW1haWwiOiJtYXR0aGV3LmJ5ZXJzMkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6ImhZOXBZTXpVNENpaVg5OEZ5bW5vWEEiLCJuYW1lIjoiTWF0dCBCeWVycyIsInBpY3R1cmUiOiJodHRwczovL2xoNS5nb29nbGV1c2VyY29udGVudC5jb20vLWh6cS1faFBVRnMwL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FDSGkzcmZlbi1hLTRYVVNoMmlzV3QwaW5BZ1ZDMXVnM2cvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6Ik1hdHQiLCJmYW1pbHlfbmFtZSI6IkJ5ZXJzIiwibG9jYWxlIjoiZW4iLCJpYXQiOjE1NzA3NTY2NzksImV4cCI6MTU3MDc2MDI3OSwianRpIjoiY2M5MDY1MDU4ZDY3NGZhYWZmNWExZTk0YTJhNzRhZjQ4M2ZiN2FmZiJ9.HKAVYcFuS7psCPkK3oACQIxlElXRHcl2-z2IttTCv3VUz3CxNIRxR_UaRk0yphvEFYh4k60zn_1UH8i3XEL79KOqhZuA9vYcS_fMb-ON2PbxRzJmO0OahaLd7GSW6i-WjjSMp-sSuIrvdeGWSL987hhYxUIQzNWLANEqcqvKNnLQr6a15A6DQ7X6gs5B4LVNsfuy1POGlF8YPcjKIxaQPVEdpMFQiWGU4UkjHn_qNd1HOYdxmhKlAOnaY00HhyLRrM6JhaIauWl2kom4s3aEwqQvhr6hPGpJLVL5GBLucvTAP7voXLhhO-N6KhsUnTVErWzvnB3r5W7SNrJSjtTblg"
+    token = request.form['id_token']
+    if True: #provider == 'google':
         #STEP 2 - Exchange for a token, https://developers.google.com/identity/sign-in/web/backend-auth
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
@@ -58,48 +59,50 @@ def login2(provider):
                 raise ValueError('Wrong issuer.')
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             userid = idinfo['sub']
+            return (idinfo)
         except ValueError:
             return("Invalid token")
             pass
+
           
-        # Check that the access token is valid.
-        access_token = credentials.access_token
-        url = ('https://oauth2.googleapis.com/tokeninfo?id_token={}'.format(access_token))
-        h = httplib2.Http()
-        result = json.loads(h.request(url, 'GET')[1])
-        # If there was an error in the access token info, abort.
-        if result.get('error') is not None:
-            response = make_response(json.dumps(result.get('error')), 500)
-            response.headers['Content-Type'] = 'application/json'
+    #     # Check that the access token is valid.
+    #     access_token = credentials.access_token
+    #     url = ('https://oauth2.googleapis.com/tokeninfo?id_token={}'.format(access_token))
+    #     h = httplib2.Http()
+    #     result = json.loads(h.request(url, 'GET')[1])
+    #     # If there was an error in the access token info, abort.
+    #     if result.get('error') is not None:
+    #         response = make_response(json.dumps(result.get('error')), 500)
+    #         response.headers['Content-Type'] = 'application/json'
             
-        print("Step 2 Complete! Access Token: {}".format(credentials.access_token))
+    #     print("Step 2 Complete! Access Token: {}".format(credentials.access_token))
 
-        #STEP 3 - Find User or make a new one
-        #Get user info
-        h = httplib2.Http()
-        userinfo_url =  "https://www.googleapis.com/oauth2/v1/userinfo"
-        params = {'access_token': credentials.access_token, 'alt':'json'}
-        answer = requests.get(userinfo_url, params=params)
+    #     #STEP 3 - Find User or make a new one
+    #     #Get user info
+    #     h = httplib2.Http()
+    #     userinfo_url =  "https://www.googleapis.com/oauth2/v1/userinfo"
+    #     params = {'access_token': credentials.access_token, 'alt':'json'}
+    #     answer = requests.get(userinfo_url, params=params)
       
-        data = answer.json()
+    #     data = answer.json()
 
-        name = data['name']
-        picture = data['picture']
-        email = data['email']
+    #     name = data['name']
+    #     picture = data['picture']
+    #     email = data['email']
         
-        #see if user exists, if it doesn't make a new one
-        user = session.query(User).filter_by(email=email).first()
-        if not user:
-            user = User(username = name, picture = picture, email = email)
-            session.add(user)
-            session.commit()
+    #     #see if user exists, if it doesn't make a new one
+    #     user = session.query(User).filter_by(email=email).first()
+    #     if not user:
+    #         user = User(username = name, picture = picture, email = email)
+    #         session.add(user)
+    #         session.commit()
 
-        #STEP 4 - Make token
-        token = user.generate_auth_token(600)
-        #STEP 5 - Send back token to the client 
-        return jsonify({'token': token.decode('ascii')})
-    else:
-        return 'Unrecoginized Provider'
+    #     #STEP 4 - Make token
+    #     token = user.generate_auth_token(600)
+    #     #STEP 5 - Send back token to the client 
+    #     return jsonify({'token': token.decode('ascii')})
+    # else:
+    #     return 'Unrecoginized Provider'
 
 
 # Start app routes
