@@ -4,3 +4,11 @@ gapi.load('auth2', function() {
         scope: 'email profile openid'
     });
 });
+
+XMLHttpRequest.addEventListener('readystatechange', evt => {
+    if (this.readyState == 4 && this.status == 200) {
+        setTimeout(function() {
+            window.location.href = "/";
+        }, 4000);
+    }
+}, false);

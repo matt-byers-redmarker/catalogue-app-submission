@@ -1,42 +1,79 @@
 <!DOCTYPE html>
 <html>
-	<head>
-	<title>Catalogue App</title>
-		{% include "head.html" %}
-	</head>
-	<body>
-		{% include "header.html" %}
-		<section class="section">
-			<div class="container">
-				<div class="columns">
-					<div class="column is-one-third">
-						<h1 class="title">
-						Categories
-						</h1>
-						<p class="subtitle">
-							A list of all the categories
-						</p>
-						<ul>
-							{% for c in categories %}
-								<li><a href="{{ url_for('category', category_id=c.id )}}">{{c.name}}</a></li>
-							{% endfor %}
-						</ul>
-					</div>
-					<div class="column">
-						<h1 class="title">
-						Category Items
-						</h1>
-						<p class="subtitle">
-							A list of all the items
-						</p>
-						<ul>
-							{% for i in items %}
-								<li><a href="{{ url_for('item', item_id=i.id)}}">{{i.name}}</a></li>
-							{% endfor %}
-						</ul>
-					</div>
-				</div>
-			</div>
-		</section>
-	</body>
+
+<head>
+    <title>Catalogue App</title>
+    {% include "head.html" %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    {% include "header.html" %} 
+    <section class="section">
+        <div class="container">
+            {% with messages = get_flashed_messages(category_filter=['success']) %}
+                {% if messages %}
+                    <div class="notification is-success level" id="flash">
+                        <button class="delete"></button>
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% with messages = get_flashed_messages(category_filter=['warning']) %}
+            {% if messages %}
+                <div class="notification is-danger level" id="flash">
+                    <button class="delete"></button>
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+            <div class="notification is-danger level" id="flash">
+                <button class="delete"></button> {% for message in messages %} {{ message }} {% endfor %}
+            </div>
+            {% endif %} {% endwith %}
+            <div class="columns">
+                <div class="column is-one-third">
+                    <h1 class="title">
+                        Categories
+                    </h1>
+                    <p class="subtitle">
+                        A list of all the categories
+                    </p>
+                    <ul>
+                        {% for c in categories %}
+                        <li><a href="{{ url_for('category', category_id=c.id )}}">{{c.name}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="column">
+                    <h1 class="title">
+                        Category Items
+                    </h1>
+                    <p class="subtitle">
+                        A list of all the items
+                    </p>
+                    <ul>
+                        {% for i in items %}
+                        <li><a href="{{ url_for('item', item_id=i.id)}}">{{i.name}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
 </html>

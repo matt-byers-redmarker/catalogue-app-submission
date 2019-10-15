@@ -1,42 +1,86 @@
+# Table imports from database
 from database_setup import Base, Category, CategoryItem, User
 
+# Imports for querying data from database
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, joinedload
 from sqlalchemy import create_engine
 
+# Flask imports
 from flask import Flask, jsonify, request, url_for, abort, g, render_template, make_response, flash, redirect, session as login_session
 from flask_httpauth import HTTPBasicAuth
 
-# from oauth2client.client import flow_from_clientsecrets
-# from oauth2client.client import FlowExchangeError
-
+# Google Oauth imports
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
+# Other python imports
 import httplib2
-# import requests
 import string
 import random
 import json
 
+# Connecting to and setting up database
 auth = HTTPBasicAuth()
-
 engine = create_engine('sqlite:///MBitemCatalog.db', connect_args={"check_same_thread": False})
-
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 app = Flask(__name__)
 
 
+# END IMPORTS -----------------
+
+
+# GOOGLE client ID for oauth
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
+
+# User Helper Functions
+def createUser(login_session):
+    newUser = User(username=login_session['username'], email=login_session['email'], picture=login_session['picture'])
+    session.add(newUser) 
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+
+# Global query variables
 categories = session.query(Category)
 items = session.query(CategoryItem)
+creator = getUserInfo(CategoryItem.user_id)
+
 
 # Login and authentication
-@app.route('/login/')
-def login():
+@app.route('/logout/')
+def logout():
+    if "username" in login_session:
+        g.current_user = None
+        flash("LoggedOut Successfully!", "success")
+        del login_session['token']
+        print('deleted token')
+        del login_session['guser_id']
+        print('deleted guser_id')
+        del login_session['username']
+        print('deleted unsername')
+        del login_session['email']
+        print('deleted email')
+        del login_session['picture']
+        print('deleted guser_id')
+        return redirect('/')
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
@@ -45,46 +89,73 @@ def login():
 
 
 @app.route('/oauth/google/', methods = ['POST'])
-def login2():
-    #STEP 1 - Parse the auth code
-    # auth_code = request.json.get('auth_code')
-    # token = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImVlNGRiZDA2YzA2NjgzY2I0OGRkZGNhNmI4OGMzZTQ3M2I2OTE1YjkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNTMxMjM4MDg4NjE5LWw4cWRidTJ0bXM3NGYxa2thb2FtNjkxdTd0ZTRkY2RoLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNTMxMjM4MDg4NjE5LWw4cWRidTJ0bXM3NGYxa2thb2FtNjkxdTd0ZTRkY2RoLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA4MTgxMTA2MDQ3MjQ5NTk0MzA0IiwiZW1haWwiOiJtYXR0aGV3LmJ5ZXJzMkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6ImhZOXBZTXpVNENpaVg5OEZ5bW5vWEEiLCJuYW1lIjoiTWF0dCBCeWVycyIsInBpY3R1cmUiOiJodHRwczovL2xoNS5nb29nbGV1c2VyY29udGVudC5jb20vLWh6cS1faFBVRnMwL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FDSGkzcmZlbi1hLTRYVVNoMmlzV3QwaW5BZ1ZDMXVnM2cvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6Ik1hdHQiLCJmYW1pbHlfbmFtZSI6IkJ5ZXJzIiwibG9jYWxlIjoiZW4iLCJpYXQiOjE1NzA3NTY2NzksImV4cCI6MTU3MDc2MDI3OSwianRpIjoiY2M5MDY1MDU4ZDY3NGZhYWZmNWExZTk0YTJhNzRhZjQ4M2ZiN2FmZiJ9.HKAVYcFuS7psCPkK3oACQIxlElXRHcl2-z2IttTCv3VUz3CxNIRxR_UaRk0yphvEFYh4k60zn_1UH8i3XEL79KOqhZuA9vYcS_fMb-ON2PbxRzJmO0OahaLd7GSW6i-WjjSMp-sSuIrvdeGWSL987hhYxUIQzNWLANEqcqvKNnLQr6a15A6DQ7X6gs5B4LVNsfuy1POGlF8YPcjKIxaQPVEdpMFQiWGU4UkjHn_qNd1HOYdxmhKlAOnaY00HhyLRrM6JhaIauWl2kom4s3aEwqQvhr6hPGpJLVL5GBLucvTAP7voXLhhO-N6KhsUnTVErWzvnB3r5W7SNrJSjtTblg"
-    print("1")
-    token = request.form['id_token']
-    if True: #provider == 'google':
-        #STEP 2 - Exchange for a token, https://developers.google.com/identity/sign-in/web/backend-auth
-        try:
+def googleLogin():
+    try:
+        if request.form['id_token']:
+            token = request.form['id_token']
             # Specify the CLIENT_ID of the app that accesses the backend:
-            print("2")
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
-            # ID token is valid. Get the user's Google Account ID from the decoded token.
-            print(idinfo)
-            userid = idinfo['sub']
-            return (idinfo)
-            print(idinfo['sub'])
-        except ValueError:
-            return("Invalid token")
-            pass
 
-        name = idinfo['name']
-        picture = idinfo['picture']
-        email = idinfo['email']
-        
-        #see if user exists, if it doesn't make a new one
-        user = session.query(User).filter_by(email=email).first()
-        if not user:
-            user = User(username = name, picture = picture, email = email)
-            session.add(user)
-            session.commit()
+            # ID token is valid. Create login session with user info.
+            login_session['guser_id'] = idinfo['sub']
+            login_session['username'] = idinfo['name']
+            login_session['picture'] = idinfo['picture']
+            login_session['email'] = idinfo['email']
+            print('Added login sessions for user: ' + login_session['username'])
 
-        #STEP 4 - Make token
-        token = user.generate_auth_token(600)
-        #STEP 5 - Send back token to the client 
-        return jsonify({'token': token.decode('ascii')})
-    else:
-        return 'Unrecoginized Provider'
+            #see if user exists, if it doesn't make a new one
+            user = session.query(User).filter_by(email=idinfo['email']).first()
+            if not user:
+                user_id = createUser(login_session)
+                login_session['user_id'] = user_id # the out put of the createUser function is the user ID
+                print("User added with name: " + login_session['username'] + " and email: " + login_session['email'])
+            else:
+                print ("User already added")
+
+            if not login_session.get('token'):
+                print('--------------Flashed Logged In----------------------')
+                flash("LoggedIn User: {}!".format(idinfo['name']), "success")
+            login_session['token'] = user.generate_auth_token(600)
+            print('Login session token: ' + str(login_session['token']))
+
+    except ValueError:
+        print("Invalid token passed")
+        pass
+
+    return idinfo
+
+# @app.route('/gdisconnect')
+# def gdisconnect():
+#     access_token = login_session.get('access_token')
+#     if access_token is None:
+#         print 'Access Token is None'
+#         response = make_response(json.dumps('Current user not connected.'), 401)
+#         response.headers['Content-Type'] = 'application/json'
+#         return response
+#     print 'In gdisconnect access token is %s', access_token
+#     print 'User name is: '
+#     print login_session['username']
+#     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+#     h = httplib2.Http()
+#     result = h.request(url, 'GET')[0]
+#     print 'result is '
+#     print result
+#     if result['status'] == '200':
+#         del login_session['access_token']
+#         del login_session['gplus_id']
+#         del login_session['username']
+#         del login_session['email']
+#         del login_session['picture']
+#         response = make_response(json.dumps('Successfully disconnected.'), 200)
+#         response.headers['Content-Type'] = 'application/json'
+#         return response
+#     else:
+#         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+#         response.headers['Content-Type'] = 'application/json'
+#         return response
+
 
 
 # Start app routes
@@ -146,6 +217,8 @@ def item(item_id):
 
 @app.route('/category/<int:category_id>/newitem/', methods=['GET', 'POST'])
 def newItem(category_id):
+    if "username" not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
         if request.form['name']:
             name = request.form['name']
@@ -162,6 +235,8 @@ def newItem(category_id):
 
 @app.route('/category/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
+    if "username" not in login_session:
+        return redirect('/login')
     editedItem = items.filter_by(id=item_id).one()
     if request.method == 'POST':
         if request.form['updatedName']:
@@ -178,6 +253,8 @@ def editItem(item_id):
 
 @app.route('/category/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(item_id):
+    if "username" not in login_session:
+        return redirect('/login')
     itemToDelete =  items.filter_by(id=item_id).one()
     if request.method == 'POST':
         session.delete(itemToDelete)

@@ -33,9 +33,12 @@
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
+                    {% if 'username' in login_session %}
+                    <a class="button is-white" id="logout-button" href="{{ url_for('login')}}">Logout</a>
+                    {% else %}
                     <a class="button is-primary"><strong>Sign up</strong></a>
                     <a class="button is-white" id="login-button" href="{{ url_for('login')}}">Log in</a>
-                    <a class="button is-white is-hidden" id="logout-button" onclick="signOut()">Logout</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
