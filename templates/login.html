@@ -3,6 +3,7 @@
     <head>
         <title>Login</title>
         {% include "head.html" %}
+        <link rel="stylesheet" href="../static/css/main.css">
     </head>
     <body>
         <section class="section is-fullheight">
@@ -15,9 +16,7 @@
                                 Login
                                 </h1>
                                 <div class="level">
-                                    <a class="button is-white" id="logout-button" onclick="signOut()">Logout</a>
-                                    <div class="g-signin2 level-item" data-onsuccess="onSignIn" data-theme="light"></div>
-                                    <a class="button is-white" id="logout-button" href="{{ url_for('catalogues') }}">Back</a>
+                                    <div class="g-signin2 level-item margin-top-lg" data-onsuccess="onSignIn" data-theme="light"></div>
                                     </div>
                                     <script>
                                         function onSignIn(googleUser) {

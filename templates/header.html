@@ -11,21 +11,11 @@
                     More
                 </a>
                 <div class="navbar-dropdown">
-                    <a class="navbar-item" href="/category">
-                        Category
+                    <a class="navbar-item" href="/category/1">
+                        Soccer
                     </a>
-                    <a class="navbar-item" href="/deleteItem">
-                        Delete Item
-                    </a>
-                    <a class="navbar-item" href="/editItem">
-                        Edit Item
-                    </a>
-                    <a class="navbar-item" href="/item">
-                        Item
-                    </a>
-                    <hr class="navbar-divider">
-                    <a class="navbar-item">
-                        Report an issue
+                    <a class="navbar-item" href="/category/2">
+                        AFL
                     </a>
                 </div>
             </div>
@@ -33,7 +23,7 @@
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
-                    {% if false %}
+                    {% if username %}
                     <a class="button is-white" id="logout-button" onclick="signOut()" href="{{ url_for('logout')}}">Logout</a>
                     <script>
                     function signOut() {
@@ -45,15 +35,6 @@
                     </script>
                     {% else %}
                     <a class="button is-white" id="login-button" href="{{ url_for('login')}}">Log in</a>
-                    <a class="button is-white" id="logout-button" onclick="signOut()" href="{{ url_for('logout')}}">Logout</a>
-                    <script>
-                    function signOut() {
-                        var auth2 = gapi.auth2.getAuthInstance();
-                        auth2.signOut().then(function() {
-                            console.log('User signed out.');
-                        });
-                    }
-                    </script>
                     {% endif %}
                 </div>
             </div>
