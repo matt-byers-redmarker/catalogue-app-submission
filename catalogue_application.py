@@ -61,7 +61,7 @@ def getUserID(email):
 # Global query variables
 categories = session.query(Category)
 items = session.query(CategoryItem)
-
+users = session.query(User)
 
 @app.route('/logout/')
 def logout():
@@ -86,7 +86,7 @@ def logout():
     print('removed token')
     login_session['state'] = None
     print('login_session values set to none')
-    flash("LoggedOut Successfully!", "success")
+    flash("Logged out successfully!", "success")
     return redirect('/')
 
 
@@ -128,9 +128,10 @@ def googleLogin():
 
             if not login_session.get('token'):
                 print('--------------Flashed Logged In----------------------')
-                flash("LoggedIn User: {}!".format(idinfo['name']), "success")
+                flash("Logged in as: {}!".format(idinfo['name']), "success")
             login_session['token'] = user.generate_auth_token(600)
             print('Login session token: ' + str(login_session['token']))
+            print('User id is: {}'.format(users.filter_by(email=login_session['email']).one().id))
 
     except ValueError:
         print("Invalid token passed")
@@ -201,6 +202,7 @@ def item(item_id):
 
 @app.route('/category/<int:category_id>/newitem/', methods=['GET', 'POST'])
 def newItem(category_id):
+    current_user_id = getUserID(login_session['email'])
     if login_session['username'] == None:
         return redirect('/login')
     if request.method == 'POST':
@@ -208,7 +210,7 @@ def newItem(category_id):
             name = request.form['name']
         if request.form['description']:
             description = request.form['description']
-        newItem = CategoryItem(name=name, description=description, category_id=category_id)
+        newItem = CategoryItem(name=name, description=description, category_id=category_id, user_id=current_user_id)
         session.add(newItem)
         session.commit()
         flash("New Category item created!")
@@ -249,9 +251,6 @@ def deleteItem(item_id):
         return redirect(url_for('category', category_id=itemToDelete.category_id))
     else:
         return render_template('deleteItem.html', item_id=item_id, item=itemToDelete)
-
-
-# ADD OAUTH
 
 
 if __name__ == '__main__':
