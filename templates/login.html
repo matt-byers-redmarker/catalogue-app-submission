@@ -3,11 +3,6 @@
     <head>
         <title>Login</title>
         {% include "head.html" %}
-        <meta name="google-signin-scope" content="profile email openid">
-        <meta name="google-signin-client_id" content="531238088619-l8qdbu2tms74f1kkaoam691u7te4dcdh.apps.googleusercontent.com">
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-        <script src="https://apis.google.com/js/platform.js"></script>
-        <script src="../static/js/oauthScripts.js"></script>
     </head>
     <body>
         <section class="section is-fullheight">
@@ -20,7 +15,7 @@
                                 Login
                                 </h1>
                                 <div class="level">
-                                    <!-- <a class="button is-white" id="logout-button" onclick="signOut()">Logout</a> -->
+                                    <a class="button is-white" id="logout-button" onclick="signOut()">Logout</a>
                                     <div class="g-signin2 level-item" data-onsuccess="onSignIn" data-theme="light"></div>
                                     <a class="button is-white" id="logout-button" href="{{ url_for('catalogues') }}">Back</a>
                                     </div>
@@ -51,7 +46,7 @@
                                             xhr.send('id_token=' + id_token);
                                             setTimeout(function() {
                                                 window.location.href = "/";
-                                            }, 4000);
+                                            }, 2000);
                                         }
 
                                         function signOut() {

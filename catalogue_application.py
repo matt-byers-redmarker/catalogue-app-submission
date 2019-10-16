@@ -63,24 +63,36 @@ categories = session.query(Category)
 items = session.query(CategoryItem)
 
 
+@app.route('/logout/')
+def logout():
+    # login_session.pop('token', None)
+    # print('removed token')
+    # login_session.pop('guser_id', None)
+    # print('removed guser_id')
+    # login_session.pop('username', None)
+    # print('removed username')
+    # login_session.pop('email', None)
+    # print('removed email')
+    # login_session.pop('picture', None)
+    login_session['guser_id'] = None
+    print('removed guser_id')
+    login_session['username'] = None
+    print('removed username')
+    login_session['picture'] = None
+    print('removed picture')
+    login_session['email'] = None
+    print('removed email')
+    login_session['token'] = None
+    print('removed token')
+    login_session['state'] = None
+    print('login_session values set to none')
+    flash("LoggedOut Successfully!", "success")
+    return redirect('/')
+
+
 # Login and authentication
 @app.route('/login/', methods = ['GET', 'POST'])
 def login():
-    # If user is logged in, end end login_session and redirect home
-    if "username" in login_session:
-        # g.current_user = None
-        login_session.pop('token', None)
-        print('removed token')
-        login_session.pop('guser_id', None)
-        print('removed guser_id')
-        login_session.pop('username', None)
-        print('removed unsername')
-        login_session.pop('email', None)
-        print('removed email')
-        login_session.pop('picture', None)
-        print('removed guser_id, login_session values reset')
-        flash("LoggedOut Successfully!", "success")
-        return redirect('/')
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
@@ -110,6 +122,7 @@ def googleLogin():
                 user_id = createUser(login_session)
                 login_session['user_id'] = user_id # the out put of the createUser function is the user ID
                 print("User added with name: " + login_session['username'] + " and email: " + login_session['email'])
+                user = session.query(User).filter_by(email=idinfo['email']).first()
             else:
                 print ("User already added")
 
@@ -164,7 +177,7 @@ def itemJSON(item_id):
 @app.route('/')
 @app.route('/catalogue/')
 def catalogues():
-    return render_template('catalogue.html', categories=categories, items=items, login_session=login_session)
+    return render_template('catalogue.html', categories=categories, items=items)
 
 
 @app.route('/category/<int:category_id>/')
@@ -178,13 +191,17 @@ def category(category_id):
 @app.route('/category/item/<int:item_id>/')
 def item(item_id):
     item = items.filter_by(id=item_id).one()
-    print("item id is " + str(item_id))
-    return render_template('item.html', item_id=item_id, item=item)
-
+    current_user_id = getUserID(login_session['email'])
+    if current_user_id == item.user_id:
+        print("Item created by current user, showing editable template")
+        return render_template('item.html', item_id=item_id, item=item)
+    else:
+        print("Item not created by user, showing restricted template")
+        return render_template('item_restricted.html', item=item)
 
 @app.route('/category/<int:category_id>/newitem/', methods=['GET', 'POST'])
 def newItem(category_id):
-    if "username" not in login_session:
+    if login_session['username'] == None:
         return redirect('/login')
     if request.method == 'POST':
         if request.form['name']:
@@ -202,12 +219,9 @@ def newItem(category_id):
 
 @app.route('/category/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
-    editedItem = items.filter_by(id=item_id).one()
-    if login_session['email']:
-        current_user_id = getUserID(login_session['email'])
-        if editedItem.user_id != current_user_id:
-            print("Logged in user did not create this item!")
-            return redirect('/login')
+    item = items.filter_by(id=item_id).one()
+    current_user_id = getUserID(login_session['email'])
+    if current_user_id == item.user_id:
         if request.method == 'POST':
             if request.form['updatedName']:
                 editedItem.name = request.form['updatedName']
@@ -219,6 +233,8 @@ def editItem(item_id):
             return redirect(url_for('category', category_id=editedItem.category_id))
         else:
             return render_template('edititem.html', item_id=item_id, item=editedItem)
+    else:
+        return redirect('item.html', item_id=item_id, item=item)
 
 
 @app.route('/category/item/<int:item_id>/delete/', methods=['GET', 'POST'])
