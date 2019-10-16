@@ -33,11 +33,27 @@
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
-                    {% if 'username' in login_session %}
-                    <a class="button is-white" id="logout-button" href="{{ url_for('login')}}">Logout</a>
+                    {% if true %}
+                    <a class="button is-white" id="logout-button" onclick="signOut()" href="{{ url_for('login')}}">Logout</a>
+                    <script>
+                    function signOut() {
+                        var auth2 = gapi.auth2.getAuthInstance();
+                        auth2.signOut().then(function() {
+                            console.log('User signed out.');
+                        });
+                    }
+                    </script>
                     {% else %}
                     <a class="button is-primary"><strong>Sign up</strong></a>
                     <a class="button is-white" id="login-button" href="{{ url_for('login')}}">Log in</a>
+                    <a class="button is-white" id="logout-button" href="{{ url_for('login')}}">Logout</a>
+                    <script>
+                    function signOut() {
+                        var auth2 = gapi.auth2.getAuthInstance();
+                        auth2.signOut().then(function() {
+                            console.log('User signed out.');
+                        });
+                    </script>
                     {% endif %}
                 </div>
             </div>

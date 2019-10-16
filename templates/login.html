@@ -20,12 +20,9 @@
                                 Login
                                 </h1>
                                 <div class="level">
-                                    {% if 'username' in login_session %}
-                                    <a class="button is-white" id="logout-button" onclick="signOut()">Logout</a>
-                                    {% else %}
                                     <!-- <a class="button is-white" id="logout-button" onclick="signOut()">Logout</a> -->
                                     <div class="g-signin2 level-item" data-onsuccess="onSignIn" data-theme="light"></div>
-                                    {% endif %}
+                                    <a class="button is-white" id="logout-button" href="{{ url_for('catalogues') }}">Back</a>
                                     </div>
                                     <script>
                                         function onSignIn(googleUser) {
@@ -38,9 +35,7 @@
                                             console.log('Given Name: ' + profile.getGivenName());
                                             console.log('Family Name: ' + profile.getFamilyName());
                                             console.log("Image URL: " + profile.getImageUrl());
-                                            $("#pic").attr("src",profile.getImageUrl());
                                             console.log("Email: " + profile.getEmail());
-                                            $("#email").text(profile.getEmail());
 
                                             // The ID token you need to pass to your backend:
                                             var id_token = googleUser.getAuthResponse().id_token;

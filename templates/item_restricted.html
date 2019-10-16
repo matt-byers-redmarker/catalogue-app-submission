@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>View {{item.name}}</title>
+		{% include "head.html" %}
+	</head>
+	<body>
+		{% include "header.html" %}
+		<section class="section">
+			<div class="container">
+				<div class="columns">
+					<div class="column is-one-third">
+						<h1 class="title">
+							{{item.name}}
+						</h1>
+						<p> 
+							{{item.description}}
+						</p>
+					</div>
+				</div>
+			</section>
+		</body>
+	</html>

@@ -31,19 +31,15 @@
                 {% endif %}
             {% endwith %}
             {% with messages = get_flashed_messages(category_filter=['warning']) %}
-            {% if messages %}
-                <div class="notification is-danger level" id="flash">
-                    <button class="delete"></button>
-                    {% for message in messages %}
-                        {{ message }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-            <div class="notification is-danger level" id="flash">
-                <button class="delete"></button> {% for message in messages %} {{ message }} {% endfor %}
-            </div>
-            {% endif %} {% endwith %}
+                {% if messages %}
+                    <div class="notification is-danger level" id="flash">
+                        <button class="delete"></button>
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
             <div class="columns">
                 <div class="column is-one-third">
                     <h1 class="title">

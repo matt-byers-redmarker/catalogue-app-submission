@@ -61,30 +61,29 @@ def getUserID(email):
 # Global query variables
 categories = session.query(Category)
 items = session.query(CategoryItem)
-creator = getUserInfo(CategoryItem.user_id)
 
 
 # Login and authentication
-@app.route('/logout/')
-def logout():
+@app.route('/login/', methods = ['GET', 'POST'])
+def login():
+    # If user is logged in, end end login_session and redirect home
     if "username" in login_session:
-        g.current_user = None
+        # g.current_user = None
+        login_session.pop('token', None)
+        print('removed token')
+        login_session.pop('guser_id', None)
+        print('removed guser_id')
+        login_session.pop('username', None)
+        print('removed unsername')
+        login_session.pop('email', None)
+        print('removed email')
+        login_session.pop('picture', None)
+        print('removed guser_id, login_session values reset')
         flash("LoggedOut Successfully!", "success")
-        del login_session['token']
-        print('deleted token')
-        del login_session['guser_id']
-        print('deleted guser_id')
-        del login_session['username']
-        print('deleted unsername')
-        del login_session['email']
-        print('deleted email')
-        del login_session['picture']
-        print('deleted guser_id')
         return redirect('/')
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
-    # return "The current session state is %s" % login_session['state']
     return render_template('login.html')
 
 
@@ -126,40 +125,8 @@ def googleLogin():
 
     return idinfo
 
-# @app.route('/gdisconnect')
-# def gdisconnect():
-#     access_token = login_session.get('access_token')
-#     if access_token is None:
-#         print 'Access Token is None'
-#         response = make_response(json.dumps('Current user not connected.'), 401)
-#         response.headers['Content-Type'] = 'application/json'
-#         return response
-#     print 'In gdisconnect access token is %s', access_token
-#     print 'User name is: '
-#     print login_session['username']
-#     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
-#     h = httplib2.Http()
-#     result = h.request(url, 'GET')[0]
-#     print 'result is '
-#     print result
-#     if result['status'] == '200':
-#         del login_session['access_token']
-#         del login_session['gplus_id']
-#         del login_session['username']
-#         del login_session['email']
-#         del login_session['picture']
-#         response = make_response(json.dumps('Successfully disconnected.'), 200)
-#         response.headers['Content-Type'] = 'application/json'
-#         return response
-#     else:
-#         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
-#         response.headers['Content-Type'] = 'application/json'
-#         return response
 
-
-
-# Start app routes
-# Add JSON endpoints here
+# JSON endpoints
 @app.route('/catalogue.json/')
 def cataloguesJSON():
     catalogue = session.query(Category).options(joinedload(Category.items)).all()
@@ -193,11 +160,11 @@ def itemJSON(item_id):
     return jsonify(categoryItem=item.serialize)
 
 
-# Add regular app routes here
+# App routes for webpages
 @app.route('/')
 @app.route('/catalogue/')
 def catalogues():
-    return render_template('catalogue.html', categories=categories, items=items)
+    return render_template('catalogue.html', categories=categories, items=items, login_session=login_session)
 
 
 @app.route('/category/<int:category_id>/')
@@ -235,20 +202,23 @@ def newItem(category_id):
 
 @app.route('/category/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(item_id):
-    if "username" not in login_session:
-        return redirect('/login')
     editedItem = items.filter_by(id=item_id).one()
-    if request.method == 'POST':
-        if request.form['updatedName']:
-            editedItem.name = request.form['updatedName']
-        if request.form['updatedDescription']:
-            editedItem.description = request.form['updatedDescription']
-        session.add(editedItem)
-        session.commit()
-        flash(str(editedItem.name) + " updated!", "success")
-        return redirect(url_for('category', category_id=editedItem.category_id))
-    else:
-        return render_template('edititem.html', item_id=item_id, item=editedItem)
+    if login_session['email']:
+        current_user_id = getUserID(login_session['email'])
+        if editedItem.user_id != current_user_id:
+            print("Logged in user did not create this item!")
+            return redirect('/login')
+        if request.method == 'POST':
+            if request.form['updatedName']:
+                editedItem.name = request.form['updatedName']
+            if request.form['updatedDescription']:
+                editedItem.description = request.form['updatedDescription']
+            session.add(editedItem)
+            session.commit()
+            flash(str(editedItem.name) + " updated!", "success")
+            return redirect(url_for('category', category_id=editedItem.category_id))
+        else:
+            return render_template('edititem.html', item_id=item_id, item=editedItem)
 
 
 @app.route('/category/item/<int:item_id>/delete/', methods=['GET', 'POST'])
