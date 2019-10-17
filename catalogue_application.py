@@ -44,8 +44,8 @@ app = Flask(__name__)
 
 
 # GOOGLE client ID for oauth
-CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+CI = "531238088619-l8qdbu2tms74f1kkaoam691u7te4dcdh.apps.googleusercontent.com"
+CLIENT_ID = CI
 
 
 # User Helper Functions

@@ -2,3 +2,4 @@ __pycache__
 .vscode
 queries.sql
 MBitemCatalog.db
+client_secrets.json

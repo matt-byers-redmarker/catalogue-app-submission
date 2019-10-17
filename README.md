@@ -13,8 +13,7 @@ This script is run through a Linux-based virtual machine. For this project, you 
 * [Virtualbox](https://www.virtualbox.org/wiki/Download_Old_Builds_5_1)
 * [Python 3](https://www.python.org/downloads/)
 
-
-
+This project also requires the python modules: Flask, SQLAlchemy, itsdangerous, and google-oauth. To download these follow the instructions below in 'How to run the script'. 
 All of the requirements for the visual styling are reliant on the Bulma CSS framework which is included in the project. All the requirements for Google Oauth login are also included in the project already. 
 
 ## Contents required to run this project
@@ -39,51 +38,22 @@ _The following files which are not included in this repository are also required
 
 ## How to run the script
 
-1. Download and install Vagrant, Virtualbox and Python 3.
-2. Download this repository with the bash command `git clone 
-3. Open a terminal, git bash, or other command line tool.
-4. cd into your directory containing the 'vagrant' folder installed after downloading vagrant.
-5. Launch the virtual machine with `vagrant up`
-6. Finalise launch of the virtual machine with `vagrant ssh`
-7. This will start a new command line instance in your virtual machine. While in here cd into your /vagrant folder.
-8. Move the contents of this repository into your vagrant folder.
-9. Load the database with `psql -d news -f newsdata.sql`
-10. Connect to the database with `\c news`
-11. Run the script with `python news_report.py` to query the databse. You should see the output of the script in your terminal.
+1. Download and install Vagrant and Virtualbox
+2. Open a terminal, git bash, or other command line tool.
+3. cd into your directory containing the 'vagrant' folder installed after downloading vagrant.
+4. Launch the virtual machine with `vagrant up`
+5. Finalise launch of the virtual machine with `vagrant ssh`
+6. This will start a new command line instance in your virtual machine. While in here cd into your /vagrant folder.
+7. To download python3 and pip package manager, run the bash command `sudo apt-get install python3 python3-pip`. Check you have python3 installed with the command `python3 -V`.
+8. Install flask using pip with the bash command `pip3 install Flask`
+9. Install SQLAlchemy using pip with the bash commmand `pip3 install SQLAlchemy`
+10. Install itsdangerous password manager using pip with the bash commmand `pip3 install itsdangerous`
+11. Install google-oauth package using pip with the bash commmand `pip3 install google-oauth`
+12. **If you get a permission error installing any of the above packages, preface the command with 'sudo', e.g:** `sudo pip3 install Flask'
+9. Download this repository with the bash command `git clone https://github.com/matt-byers-redmarker/catalogue-app-submission.git`
+10. Once downloaded, cd into the /catalog folder
+11. Once inside the project folder, setup the database by running the bash command `python3 database_setup.py`. You will know that the database has been initialised correctly when the file MBitemCatalog.db is created in the root directory.
+12. Once the database has been set up, create the dummy data by running the bash command `python3 lots_of_categories.py`
+13. Once the dummy data has been created, run the application on localhost port 8000 by running the bash command `python3 catalogue_application.py`
+14. View the application online by navigating to `http://localhost:8000/`
 
-## Example code output
-
-```
-Q: What are the most popular three articles of all time?
-
-Candidate is jerk, alleges rival — 338647 views
-Bears love berries, alleges bear — 253801 views
-Bad things gone, say good people — 170098 views
-
-Q: Who are the most popular article authors of all time?
-
-Ursula La Multa — 507594 views
-Rudolf von Treppenwitz — 423457 views
-Anonymous Contributor — 170098 views
-Markoff Chaney — 84557 views
-
-Q: On which day/s did more than 1% of requests lead to errors?
-```
-
-July 17, — 2.3 errors
-
-## Views:
-
-This view 'daily_error_rate' was used in the query which answered question 3. It creates a table of each day, the total errors, total requests, and the rate of errors relative to total requests.
-
-```
-create view daily_error_rate as 
-select 
-time::date as date,
-sum(case when status = '404 NOT FOUND' then 1 else 0 end) as errors,
-count(*) as total_requests,
-round(100.0*(sum(case when status = '404 NOT FOUND' then 1 else 0 end))/(count(*)), 1) as rate
-from log
-group by date
-order by rate desc;
-```
