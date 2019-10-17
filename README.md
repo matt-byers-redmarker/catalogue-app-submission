@@ -20,6 +20,7 @@ All of the requirements for the visual styling are reliant on the Bulma CSS fram
 * database_setup.py > script for setting up the database
 * catalogue_application.py > script required for running the application continuously
 * database_setup.py > script for populating the database with dummy data to be displayed in the app
+* Vagrantfile.rtf > responsible for running the virtual machine on port 8000
 * 'templates' directory with the following files:
     * catalogue.html
     * category.html
@@ -33,8 +34,6 @@ All of the requirements for the visual styling are reliant on the Bulma CSS fram
     * newitem.html
 * 'static' directory, with a 'css' disrectory inside with the file: main.css > this controls the page styling and css
 * README.md > this file, explains the project and running requirements
-_The following files which are not included in this repository are also required to run this script_
-* Vagrantfile > this file should be included in the root 'vagrant' folder you downloaded when installing Vagrant
 
 ## How to run the script
 
