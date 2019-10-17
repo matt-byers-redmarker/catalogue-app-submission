@@ -1,6 +1,6 @@
-# Udacity Project: Logs Analysis
+# Udacity Project: Catalogue Application
 
-The aim of this project is to produce a python script which queries a database of news data to answer three key reporting questions: 
+This project contains code for a locally hosted catalogue application, which displays a catalogue of items within different categories of sports. The aim of this project is to produce a locally hosted web application which allows a user to login with Google Oauth and view content from a database, as well as create, edit, read and delete content on the app. The users' aility to create items is contingent on being logged into the app, and their ability to edit and delete an item is contingent on that user being the initial creator of the item. The app also has JSON endpoints for accessing data in the database. 
 * What are the most popular three articles of all time?
 * Who are the most popular article authors of all time?
 * On which day/s did more than 1% of requests lead to errors?
@@ -13,18 +13,34 @@ This script is run through a Linux-based virtual machine. For this project, you 
 * [Virtualbox](https://www.virtualbox.org/wiki/Download_Old_Builds_5_1)
 * [Python 3](https://www.python.org/downloads/)
 
+
+
+All of the requirements for the visual styling are reliant on the Bulma CSS framework which is included in the project. All the requirements for Google Oauth login are also included in the project already. 
+
 ## Contents required to run this project
-* news_report.py > script for querying the database
-* news_report_example_output.txt > example output of news_report.py
+* database_setup.py > script for setting up the database
+* catalogue_application.py > script required for running the application continuously
+* database_setup.py > script for populating the database with dummy data to be displayed in the app
+* 'templates' directory with the following files:
+    * catalogue.html
+    * category.html
+    * deleteItem.html
+    * editItem.html
+    * head.html
+    * header.html
+    * item_restricted.html
+    * item.html
+    * login.html
+    * newitem.html
+* 'static' directory, with a 'css' disrectory inside with the file: main.css > this controls the page styling and css
 * README.md > this file, explains the project and running requirements
 _The following files which are not included in this repository are also required to run this script_
-* newsdata.sql > sql file for creating the tables which the news_report.py script queries
-* Vagrantfile > this file should be included in the 'vagrant' folder you download when installing Vagrant
+* Vagrantfile > this file should be included in the root 'vagrant' folder you downloaded when installing Vagrant
 
 ## How to run the script
 
 1. Download and install Vagrant, Virtualbox and Python 3.
-2. Download this repository and ensure it has each file mentioned above.
+2. Download this repository with the bash command `git clone 
 3. Open a terminal, git bash, or other command line tool.
 4. cd into your directory containing the 'vagrant' folder installed after downloading vagrant.
 5. Launch the virtual machine with `vagrant up`

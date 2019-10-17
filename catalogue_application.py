@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3
+# -*- coding: utf-8 -*-
 # Table imports from database
 from database_setup import Base, Category, CategoryItem, User
 
@@ -171,7 +173,7 @@ def categoriesJSON():
 
 @app.route('/category/<int:category_id>/items.json/')
 def categoryItemsJSON(category_id):
-    categoryItems = items.filter_by(id=category_id).all()
+    categoryItems = items.filter_by(category_id=category_id)
     return jsonify(items=[i.serialize for i in categoryItems])
 
 
