@@ -223,6 +223,7 @@ def item(item_id):
 @app.route('/category/<int:category_id>/newitem/', methods=['GET', 'POST'])
 @login_required
 def newItem(category_id):
+    current_user_id = getUserID(login_session['email'])
     if request.method == 'POST':
         if request.form['name']:
             name = request.form['name']
@@ -243,9 +244,9 @@ def newItem(category_id):
 @app.route('/category/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 @login_required
 def editItem(item_id):
-    item = items.filter_by(id=item_id).one()
+    editedItem = items.filter_by(id=item_id).one()
     current_user_id = getUserID(login_session['email'])
-    if current_user_id == item.user_id:
+    if current_user_id == editedItem.user_id:
         if request.method == 'POST':
             if request.form['updatedName']:
                 editedItem.name = request.form['updatedName']
@@ -261,7 +262,7 @@ def editItem(item_id):
                                    item_id=item_id,
                                    item=editedItem)
     else:
-        return redirect('item.html', item_id=item_id, item=item)
+        return redirect('item.html', item_id=item_id, item=editedItem)
 
 
 @app.route('/category/item/<int:item_id>/delete/', methods=['GET', 'POST'])
